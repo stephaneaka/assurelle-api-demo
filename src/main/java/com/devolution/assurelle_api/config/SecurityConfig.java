@@ -25,17 +25,26 @@ import com.devolution.assurelle_api.service.UserAccountService;
 public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
+        // -- H2 DB Console
+        "/h2-console",
+        "/h2-console/**",
+        "/h2-console/login/**",
+        "/h2-console/login.do?**",
+        "/console/**",
         // -- Swagger UI v3 (OpenAPI)
         "/v3/api-docs/**",
         "/swagger-ui/**",
-        // other public endpoints of your API may be appended to this array
+        // api routes
+        "/api/v1/home",
         "/api/v1/token",
-        "/admin/users",
-        "/admin/users/**",
-        "/h2-console",
-        "/console/**",
-        "/h2-console/**",
+        "/api/v1/register",
+        "/api/v1/users",
+        "/api/v1/vehicle-categories",
+        "/api/v1/products",
+        "/api/v1/guarantees",
+        "/api/v1/simulations",
         "/api/v1/simulations/**",
+        "/api/v1/subscriptions",
         "/api/v1/subscriptions/**"
         
 };
@@ -61,7 +70,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth.requestMatchers(AUTH_WHITELIST).permitAll())
-        .authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/**").authenticated())
+        //.authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/**").authenticated())
                 
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

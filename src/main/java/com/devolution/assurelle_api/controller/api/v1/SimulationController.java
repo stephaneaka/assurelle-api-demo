@@ -41,12 +41,12 @@ public class SimulationController {
     private SubscriptionRepository subscriptionRepository;
 
     @Operation(summary = "Liste des devis", description = "Affiche la totalite des Devis enregistrés")
-    @GetMapping("/")
+    @GetMapping("")
     public List<Subscription> getAll(){
         return subscriptionRepository.findByStatus(0);
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     @ResponseBody
     @Operation(summary = "Calculer un devis", description = "Permet de calculer, enregistrer et retourner un devis sur la base des caractéristique du vehicule")
     public QuoteResponse create(@RequestBody QuoteRequest quoteRequest){
@@ -87,8 +87,8 @@ public class SimulationController {
 
     @Operation(summary = "Lire un devis", description = "Cette methode permet de lire un devis dont on connait l'identifiant ")
     @GetMapping("/{id}")
-    public String getOne(@PathVariable(required = true) long id){
-        return new String();
+    public Subscription getOne(@PathVariable(required = true) long id){
+        return subscriptionRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Souscription introuvable !"));
     }
 
     public record QuoteRequest(

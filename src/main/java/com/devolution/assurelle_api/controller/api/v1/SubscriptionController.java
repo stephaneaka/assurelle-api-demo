@@ -41,8 +41,14 @@ public class SubscriptionController {
     @Autowired
     private SubscriptionRepository repos;
 
+    @Operation(summary = "Liste des souscriptions", description = "Permet d'obtenir la listee de toutes les souscriptions")
+    @GetMapping("")
+    public List<Subscription> all(){
+        return repos.subscriptionsOnly();
+    }
+
     @Operation(summary = "Souscription", description = "Souscription a partir dun devis préalablement calculé et enregistré")
-    @PostMapping("/")
+    @PostMapping("")
     public String create(@RequestBody SubscriptionRequest requestBody){
         
         Subscription subscription = repos.findById(requestBody.quoteId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Devis non trouvé !"));
@@ -100,12 +106,6 @@ public class SubscriptionController {
 				.headers(header)
 				.contentType(MediaType.APPLICATION_PDF)
 				.body(pdf);
-    }
-
-    @Operation(summary = "Liste des souscriptions", description = "Permet d'obtenir la listee de toutes les souscriptions")
-    @GetMapping("/")
-    public List<Subscription> all(){
-        return repos.subscriptionsOnly();
     }
 
     @Operation(summary = "Souscriptions selon le statut", description = "Affiche les souscriptions selon le code de statut : 0 = Devis, 1= Souscription ")

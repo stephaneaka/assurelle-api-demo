@@ -16,10 +16,8 @@ import com.devolution.assurelle_api.repository.UserAccountRepository;
 public class UserAccountService implements UserDetailsService{
     @Autowired
     private UserAccountRepository repository;
-
     @Autowired
     private PasswordEncoder encoder;
-
 
     @Override
     public UserAccountDetails loadUserByUsername(String username) throws UsernameNotFoundException {
