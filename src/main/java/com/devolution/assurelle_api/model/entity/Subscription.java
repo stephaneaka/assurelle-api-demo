@@ -35,8 +35,7 @@ public class Subscription {
     @OneToOne(fetch =FetchType.EAGER, cascade = CascadeType.ALL)
     private Vehicle vehicle;
 
-    private long creatorId ;
-    private String creatorName ;
+    private String creator ;
     private int status = 0;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Charge> charges = new ArrayList<>();

@@ -10,5 +10,4 @@ import com.devolution.assurelle_api.model.entity.UserAccount;
 @Repository
 public interface UserAccountRepository extends JpaRepository<UserAccount,Long> {
     Optional<UserAccount> findByName(String name);
-    Optional<UserAccount> findByEmail(String email);
 }

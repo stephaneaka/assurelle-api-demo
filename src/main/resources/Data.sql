@@ -1,9 +1,7 @@
-INSERT INTO USER_ACCOUNT (EMAIL, PASSWORD,NAME,ROLES,ENABLED) 
+INSERT INTO USER_ACCOUNT (NAME,PASSWORD,ROLES,ENABLED) 
 VALUES 
-('admin@devolution.com', 'password', 'Administrateur', 'ROLE_USER,ROLE_ADMIN',1),
-('user1@devolution.com', 'password', 'Ophelie AMANOUA', 'ROLE_USER',1),
-('user2@devolution.com', 'password', 'Vicoire Lou Epse CISSOKO', 'ROLE_USER',1),
-('user3@devolution.com', 'password', 'Andrea FLAVIE YAPO 3', 'ROLE_USER',1);
+('admin@devolution.com', '$2a$10$mXGR/7rszu6hiAKEcKxt1e2cbXsKCRBJJoxNQ/UMAcs95GYNNuq7a', 'ROLE_ADMIN',1),
+('user@devolution.com', '$2a$10$mXGR/7rszu6hiAKEcKxt1e2cbXsKCRBJJoxNQ/UMAcs95GYNNuq7a', 'ROLE_USER',1);
 
 INSERT INTO VEHICLE_CATEGORY (ID, NAME, DESCRIPTION) 
 VALUES 

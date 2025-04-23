@@ -1,11 +1,14 @@
 package com.devolution.assurelle_api.filter;
 import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+//import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.devolution.assurelle_api.service.JwtService;
@@ -15,15 +18,22 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-    @Autowired
-    private JwtService jwtService;
+    
+    private JwtService jwtService = new JwtService();
+    public JwtService jwtService(){
+        return jwtService;
+    }
 
     @Autowired
     private UserAccountService userAccountService;
+    
+
     @SuppressWarnings("null")
     @Override
     protected void doFilterInternal(

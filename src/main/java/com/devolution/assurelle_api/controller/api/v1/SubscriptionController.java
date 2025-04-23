@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,7 @@ import com.google.zxing.WriterException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RequestMapping("/api/v1/subscriptions")
@@ -43,12 +45,16 @@ public class SubscriptionController {
 
     @Operation(summary = "Liste des souscriptions", description = "Permet d'obtenir la listee de toutes les souscriptions")
     @GetMapping("")
+    @Secured("ROLE_USER")
+    @SecurityRequirement(name = "Bearer Authentication")
     public List<Subscription> all(){
         return repos.subscriptionsOnly();
     }
 
-    @Operation(summary = "Souscription", description = "Souscription a partir dun devis préalablement calculé et enregistré")
+    @Operation(summary = "Souscription", description = "Souscription a partir dun devis (simulation) préalablement calculé et enregistré. le chmap - quoteId- represente ID de la simulation")
     @PostMapping("")
+    @Secured("ROLE_USER")
+    @SecurityRequirement(name = "Bearer Authentication")
     public String create(@RequestBody SubscriptionRequest requestBody){
         
         Subscription subscription = repos.findById(requestBody.quoteId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Devis non trouvé !"));
@@ -77,11 +83,15 @@ public class SubscriptionController {
 
     @Operation(summary = "Infoo d'une souscription", description = "Affiche les détails une sousscription")
     @GetMapping("/{id}")
+    @Secured("ROLE_USER")
+    @SecurityRequirement(name = "Bearer Authentication")
     public Subscription read(@PathVariable(required = true) long id){
         return repos.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Souscription introuvable !"));
     }
 
     @GetMapping("/{id}/attestation")
+    @Secured("ROLE_USER")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<byte[]> pdf(@PathVariable(required = true) long id) throws WriterException, IOException{
         
         Subscription subscription = repos.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Souscription introuvable !"));
@@ -110,6 +120,8 @@ public class SubscriptionController {
 
     @Operation(summary = "Souscriptions selon le statut", description = "Affiche les souscriptions selon le code de statut : 0 = Devis, 1= Souscription ")
     @GetMapping("/status/{id}")
+    @Secured("ROLE_USER")
+    @SecurityRequirement(name = "Bearer Authentication")
     public List<Subscription> getByStatus(@PathVariable(required = true) int id){
         return repos.findByStatus(id);
     }
