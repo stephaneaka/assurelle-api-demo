@@ -6,17 +6,18 @@ import com.devolution.assurelle_api.model.entity.Guarantee;
 import com.devolution.assurelle_api.model.entity.Product;
 import com.devolution.assurelle_api.model.entity.UserAccount;
 import com.devolution.assurelle_api.model.entity.VehicleCategory;
+import com.devolution.assurelle_api.model.record.AuthRequest;
+import com.devolution.assurelle_api.model.record.AuthResponse;
+import com.devolution.assurelle_api.model.record.RegistrationInfos;
 import com.devolution.assurelle_api.repository.GuaranteeRepository;
 import com.devolution.assurelle_api.repository.ProductRepository;
 import com.devolution.assurelle_api.repository.VehicleCategoryRepository;
 import com.devolution.assurelle_api.service.UserAccountService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class DefaultController {
 
     @PostMapping("/api/v1/token")
     public ResponseEntity<AuthResponse> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        return new ResponseEntity<AuthResponse>(authenticate(authRequest.email, authRequest.password),HttpStatus.OK);
+        return new ResponseEntity<AuthResponse>(authenticate(authRequest.email(), authRequest.password()),HttpStatus.OK);
     }
 
     @PostMapping("/api/v1/register")
@@ -65,8 +66,8 @@ public class DefaultController {
     ) {
         UserAccount u = new UserAccount();
         u.setName(userInfos.email());
-        u.setPassword(userInfos.password);
-        if (userInfos.isAdmin) {
+        u.setPassword(userInfos.password());
+        if (userInfos.isAdmin()) {
             u.setRoles("ROLE_ADMIN");
         }
         return userAccountService.addUser(u);
@@ -99,18 +100,6 @@ public class DefaultController {
         return guaranteeRepository.findAll();
     }
 
-    public record AuthRequest(
-        @Schema(example = "user@devolution.com", required = true)
-        String email, 
-        @Schema(example = "password", required = true)
-        String password) {
-    }
-    public record RegistrationInfos(
-        String email, 
-        boolean isAdmin,
-        String password) {
-    }
-
     private AuthResponse authenticate(String username, String password){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         if (authentication.isAuthenticated()) {
@@ -131,10 +120,5 @@ public class DefaultController {
             );
         }
     }
-    public record AuthResponse(
-        int code,
-        String message,
-        String token, 
-        Date expire) {
-    }
+    
 }

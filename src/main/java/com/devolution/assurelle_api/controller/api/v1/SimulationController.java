@@ -22,12 +22,13 @@ import com.devolution.assurelle_api.model.entity.Charge;
 import com.devolution.assurelle_api.model.entity.Product;
 import com.devolution.assurelle_api.model.entity.Subscription;
 import com.devolution.assurelle_api.model.entity.Vehicle;
+import com.devolution.assurelle_api.model.record.QuoteRequest;
+import com.devolution.assurelle_api.model.record.QuoteResponse;
 import com.devolution.assurelle_api.repository.ProductRepository;
 import com.devolution.assurelle_api.repository.SubscriptionRepository;
 import com.devolution.assurelle_api.service.QuoteCalculator;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -37,8 +38,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Simulations", description = "Interfaces de calcul et enregistreememt de devis")
 public class SimulationController {
     
-    @Autowired
-    private QuoteCalculator quoteCalculator;
     @Autowired
     private ProductRepository productRepository;
     @Autowired
@@ -61,11 +60,11 @@ public class SimulationController {
         
         Product product = productRepository.findById(quoteRequest.productId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produit introuvable"));
         String quoteRef = "QT000000000000";
-        Map<String, Double> quoteDetails = quoteCalculator.calculate(product, quoteRequest);
+        Map<String, Double> quoteDetails = QuoteCalculator.calculate(product, quoteRequest);
         
         LocalDateTime quoteDate = LocalDateTime.now();
         
-        if (quoteRequest.save) {
+        if (quoteRequest.save()) {
             Subscription subscription = new Subscription();
             subscription.setCreator(SecurityContextHolder.getContext().getAuthentication().getName());
             Long quoteId = subscriptionRepository.save(subscription).getId();
@@ -74,9 +73,9 @@ public class SimulationController {
             subscription.setQuoteDate(quoteDate);
             
             Vehicle vehicle = new Vehicle();
-            vehicle.setFiscalPower(quoteRequest.vehicleFiscalPower);
-            vehicle.setOriginalCost(quoteRequest.vehicleOriginalCost);
-            vehicle.setMarketCost(quoteRequest.vehicleMarketCost);
+            vehicle.setFiscalPower(quoteRequest.vehicleFiscalPower());
+            vehicle.setOriginalCost(quoteRequest.vehicleOriginalCost());
+            vehicle.setMarketCost(quoteRequest.vehicleMarketCost());
             subscription.setVehicle(vehicle);
             
             quoteDetails.forEach( (k,v) -> {
@@ -101,32 +100,7 @@ public class SimulationController {
         return subscriptionRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Souscription introuvable !"));
     }
 
-    public record QuoteRequest(
-    @Schema(description = "ID du Produit sélectionné pour la simulation", example = "1", required = true)
-    long productId,
-    @Schema(description = "Puissance fiscale du vehicule en cv", example = "1", required = true)
-    int vehicleFiscalPower,
-    @Schema(description = "Valeur a neuf du vehicule", example = "8000000", required = true)
-    double vehicleOriginalCost,
-    @Schema(description = "Valeur vénale du vehicule", example = "5000000", required = true)
-    double vehicleMarketCost,
-    @Schema(description = "Indique si OUI ou NON, le devis doit être enregistré apres le calcul", example = "true", required = true)
-    boolean save) {}
-
-    public record QuoteResponse(
-    @Schema(description = "La reférence du devis calculé")
-    String quoteReference,
-    @Schema(description = "La date du calcul du devis")
-    LocalDateTime quoteDate,
-    @Schema(description = "La date d'expiration du devis calculé")
-    LocalDateTime expireDate,
-    @Schema(description  = "Le nom du produit sélectionné")
-    String productNane,
-    @Schema(description = "Le montant total des primes")
-    double price,
-    @Schema(description = "Les détails des primes")
-    Map<String, Double> quoteDetails,
-    @Schema(description = "Les données de calcul")
-    QuoteRequest inputValues) {}
+    
+    
 
 }

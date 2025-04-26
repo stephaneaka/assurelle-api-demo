@@ -1,6 +1,5 @@
 package com.devolution.assurelle_api.controller.api.v1;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.devolution.assurelle_api.model.entity.Subscriber;
 import com.devolution.assurelle_api.model.entity.Subscription;
+import com.devolution.assurelle_api.model.record.SubscriptionRequest;
 import com.devolution.assurelle_api.repository.SubscriptionRepository;
 import com.devolution.assurelle_api.service.PdfRenderer;
 import com.devolution.assurelle_api.service.QRcodeRenderer;
@@ -31,7 +31,6 @@ import com.devolution.assurelle_api.service.ViewRenderer;
 import com.google.zxing.WriterException;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -57,23 +56,23 @@ public class SubscriptionController {
     @SecurityRequirement(name = "Bearer Authentication")
     public String create(@RequestBody SubscriptionRequest requestBody){
         
-        Subscription subscription = repos.findById(requestBody.quoteId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Devis non trouvé !"));
+        Subscription subscription = repos.findById(requestBody.quoteId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Devis non trouvé !"));
 
         Subscriber subscriber = new Subscriber();
-        subscriber.setLastName(requestBody.subscriberLastName);
-        subscriber.setFirstName(requestBody.subscriberFirstName);
-        subscriber.setAddress(requestBody.subscriberAddress);
-        subscriber.setCity(requestBody.subscriberCity);
-        subscriber.setIdCardNumber(requestBody.subscriberIdCardNumber);
-        subscriber.setPhoneNumber(requestBody.subscriberPhone);
+        subscriber.setLastName(requestBody.subscriberLastName());
+        subscriber.setFirstName(requestBody.subscriberFirstName());
+        subscriber.setAddress(requestBody.subscriberAddress());
+        subscriber.setCity(requestBody.subscriberCity());
+        subscriber.setIdCardNumber(requestBody.subscriberIdCardNumber());
+        subscriber.setPhoneNumber(requestBody.subscriberPhone());
         subscription.setSubscriber(subscriber);
 
-        subscription.getVehicle().setColor(requestBody.vehicleColor);
-        subscription.getVehicle().setDoorsCount(requestBody.vehicleDoorsCount);
-        subscription.getVehicle().setSeatsCount(requestBody.vehicleSeatsCount);
-        subscription.getVehicle().setRegistryNumber(requestBody.vehicleRegNumber);
-        subscription.getVehicle().setServiceDate(requestBody.vehicleDate);
-        subscription.getVehicle().setCategoryId(requestBody.vehicleCategoryId);
+        subscription.getVehicle().setColor(requestBody.vehicleColor());
+        subscription.getVehicle().setDoorsCount(requestBody.vehicleDoorsCount());
+        subscription.getVehicle().setSeatsCount(requestBody.vehicleSeatsCount());
+        subscription.getVehicle().setRegistryNumber(requestBody.vehicleRegNumber());
+        subscription.getVehicle().setServiceDate(requestBody.vehicleDate());
+        subscription.getVehicle().setCategoryId(requestBody.vehicleCategoryId());
 
         subscription.setStatus(1);
         subscription.setSubscriptDate(LocalDateTime.now());
@@ -81,7 +80,7 @@ public class SubscriptionController {
         return "saved";
     }
 
-    @Operation(summary = "Infoo d'une souscription", description = "Affiche les détails une sousscription")
+    @Operation(summary = "Détails d'une souscription", description = "Affiche les détails une sousscription")
     @GetMapping("/{id}")
     @Secured("ROLE_USER")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -99,11 +98,11 @@ public class SubscriptionController {
         byte[] qrCodeImage = QRcodeRenderer.render(url, 50, 50);
         String qrcode = Base64.getEncoder().encodeToString(qrCodeImage);
 
-        Map<String, Object> teemplateData = new HashMap<>();
-        teemplateData.put("subscription", subscription);
-        teemplateData.put("qrcode", qrcode);
+        Map<String, Object> templateData = new HashMap<>();
+        templateData.put("subscription", subscription);
+        templateData.put("qrcode", qrcode);
 
-        String htm = ViewRenderer.render("templates/demo", teemplateData);
+        String htm = ViewRenderer.render("templates/demo", templateData);
         byte[] pdf = PdfRenderer.render(htm);
 
         HttpHeaders header = new HttpHeaders();
@@ -126,33 +125,6 @@ public class SubscriptionController {
         return repos.findByStatus(id);
     }
 
-    public record SubscriptionRequest(
-    @Schema(example = "1",description = "ID du devis préalablement calculé et qui sera transformé en souscription", required = true)
-    long quoteId,
-    @Schema( description = "Datee de mise en service du vehicule", required = true)
-    Date vehicleDate,
-    @Schema(example = "ROUGE", description = "Couleur du vehicule", required = true)
-    String vehicleColor,
-    @Schema(example = "4567CI09", description = "Nunero d'immatriculation du vehicule", required = true)
-    String vehicleRegNumber,
-    @Schema(example = "5", description = "Nombre de siège du vehicule", required = true)
-    int vehicleSeatsCount,
-    @Schema(example = "4", description = "Nombre de portières du vehicule", required = true)
-    int vehicleDoorsCount,
-    @Schema(example = "201", description = "ID de la catégorrie du vehicule", required = true)
-    long vehicleCategoryId,
-    @Schema(example = "COCODY ABIDJAN", description = "Adresse du souscripteur", required = true)
-    String subscriberAddress,
-    @Schema(example = "00 00 90 89 78", description = "Telephone du souscripteur", required = true)
-    String subscriberPhone,
-    @Schema(example = "AKA", description = "Nom du souscripteur", required = true)
-    String subscriberLastName,
-    @Schema(example = "STEPHANE ELVIS", description = "Prénoms du souscripteur", required = true)
-    String subscriberFirstName,
-    @Schema(example = "CNI000001", description = "Numéro de la pièce d'identite du souscripteur", required = true)
-    String subscriberIdCardNumber,
-    @Schema(example = "ABIDJAN", description = "Ville du souscripteur", required = true)
-    String subscriberCity
-    ) {}
+    
 
 }

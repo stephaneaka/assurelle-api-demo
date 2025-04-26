@@ -4,16 +4,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.stereotype.Service;
 
-import com.devolution.assurelle_api.controller.api.v1.SimulationController.QuoteRequest;
 import com.devolution.assurelle_api.model.entity.Guarantee;
 import com.devolution.assurelle_api.model.entity.Product;
+import com.devolution.assurelle_api.model.record.QuoteRequest;
 
-@Service
+
 public class QuoteCalculator {
 
-    public Map<String, Double> calculate(Product p,QuoteRequest quoteRequest){
+    public static Map<String, Double> calculate(Product p,QuoteRequest quoteRequest){
         Map<String, Double> charges = new HashMap<>();
 
         p.getGuarantees().stream().sorted(Comparator.comparingLong(Guarantee::getId)).forEach(g->{
@@ -24,7 +23,7 @@ public class QuoteCalculator {
         return charges;
     }
 
-    private double calculateCharge(Guarantee g, QuoteRequest q){
+    private static double calculateCharge(Guarantee g, QuoteRequest q){
         
         switch (g.getName()) {
             case "RC":
