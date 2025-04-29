@@ -99,8 +99,4 @@ public class SimulationController {
     public Subscription getOne(@PathVariable(required = true) long id){
         return subscriptionRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Souscription introuvable !"));
     }
-
-    
-    
-
 }

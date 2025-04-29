@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 @OpenAPIDefinition(
     info = @Info(title = "Assur'Elle - WebService ", 
                  version = "1.0", 
-                 description = "Recrutement D²veloppeur Full-stack / Test Technique"),
+                 description = "Recrutement Développeur Full-stack / Test Technique"),
     servers = {@Server(url = "http://localhost:8080", 
                        description = "Local server")}
 )

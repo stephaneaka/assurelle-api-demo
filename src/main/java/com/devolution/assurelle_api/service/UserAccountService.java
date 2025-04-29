@@ -20,7 +20,6 @@ public class UserAccountService implements UserDetailsService{
     @Autowired
     private UserAccountRepository repository ;
    
-
     private final JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();;
 
@@ -58,8 +57,5 @@ public class UserAccountService implements UserDetailsService{
         return repository.findAll();
     }
 
-    
-
-    
 
 }

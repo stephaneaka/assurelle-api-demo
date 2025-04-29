@@ -63,7 +63,7 @@ public class DefaultController {
     @Operation(summary = "Création de Compte")
     @SecurityRequirement(name = "Bearer Authentication")
     public String register(@RequestBody RegistrationInfos userInfos
-    ) {
+    ){
         UserAccount u = new UserAccount();
         u.setName(userInfos.email());
         u.setPassword(userInfos.password());
@@ -106,11 +106,10 @@ public class DefaultController {
             String token = userAccountService.jwtAuthFilter().jwtService().generateToken(username);
             return new AuthResponse(
                 200,
-                "Sucsess",
+                "Success",
                 token, 
                 userAccountService.jwtAuthFilter().jwtService().extractExpiration(token)
             );
-
         } else {
             return new AuthResponse(
                 403,
@@ -120,5 +119,4 @@ public class DefaultController {
             );
         }
     }
-    
 }
